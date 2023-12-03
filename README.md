@@ -21,7 +21,7 @@ This is a solution to the [Tic Tac Toe challenge on Frontend Mentor](https://www
 ### Links
 
 - GitHub URL: [https://github.com/norrland90/tic-tac-toe/]
-- Live Site URL: []
+- Live Site URL: [https://norrland90.github.io/tic-tac-toe/]
 
 ### Project status
 
