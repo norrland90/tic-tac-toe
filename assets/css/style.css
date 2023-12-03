@@ -323,12 +323,13 @@ body {
 }
 
 .game__game-icon {
-  display: none;
+  display: block;
+  pointer-events: none;
 }
 
-.game__game-icon.active {
+/* .game__game-icon.active {
   display: block;
-}
+} */
 
 /* Should be set by JS, based on who's turn it is */
 .game__game-icon-x-outline.hover,

@@ -1,36 +1,70 @@
-// Det mesta bör vara klart. Först göra lite tester av spelet och se att allt funkar som det ska.
-// Steget efter blir då att kolla igenom hela projektet. Kan med fördel börja med HTML och CSS, där vissa justeringar av klasser osv. kan komma. Samtidigt se till att ändra klasser i JS.
-// Där efter refraktorera hela JS, som bör gå förenkla och göra betydligt smartare och enklare.
-// OBS: GÖR EN KOPIA PÅ ALLT INNAN JAG BÖRJAR KOLLA IGENOM/ÄNDRA.
+// GLOBAL VARIABLES
+
+const svgAttributes = {
+  x: {
+    default: {
+      class: 'game__game-icon game__game-icon-x',
+      width: '64',
+      height: '64',
+      xmlns: 'http://www.w3.org/2000/svg',
+    },
+    defaultPath: {
+      d: 'M15.002 1.147 32 18.145 48.998 1.147a3 3 0 0 1 4.243 0l9.612 9.612a3 3 0 0 1 0 4.243L45.855 32l16.998 16.998a3 3 0 0 1 0 4.243l-9.612 9.612a3 3 0 0 1-4.243 0L32 45.855 15.002 62.853a3 3 0 0 1-4.243 0L1.147 53.24a3 3 0 0 1 0-4.243L18.145 32 1.147 15.002a3 3 0 0 1 0-4.243l9.612-9.612a3 3 0 0 1 4.243 0Z',
+      fill: '#31C3BD',
+      'fill-rule': 'evenodd',
+    },
+    outline: {
+      class: 'game__game-icon game__game-icon-x-outline',
+      width: '64',
+      height: '64',
+      xmlns: 'http://www.w3.org/2000/svg',
+    },
+    outlinePath: {
+      d: 'M51.12 1.269c.511 0 1.023.195 1.414.586l9.611 9.611c.391.391.586.903.586 1.415s-.195 1.023-.586 1.414L44.441 32l17.704 17.705c.391.39.586.902.586 1.414 0 .512-.195 1.024-.586 1.415l-9.611 9.611c-.391.391-.903.586-1.415.586a1.994 1.994 0 0 1-1.414-.586L32 44.441 14.295 62.145c-.39.391-.902.586-1.414.586a1.994 1.994 0 0 1-1.415-.586l-9.611-9.611a1.994 1.994 0 0 1-.586-1.415c0-.512.195-1.023.586-1.414L19.559 32 1.855 14.295a1.994 1.994 0 0 1-.586-1.414c0-.512.195-1.024.586-1.415l9.611-9.611c.391-.391.903-.586 1.415-.586s1.023.195 1.414.586L32 19.559 49.705 1.855c.39-.391.902-.586 1.414-.586Z',
+      stroke: '#31C3BD',
+      'stroke-width': '2',
+      fill: 'none',
+    },
+  },
+  o: {
+    default: {
+      class: 'game__game-icon game__game-icon-o',
+      width: '64',
+      height: '64',
+      xmlns: 'http://www.w3.org/2000/svg',
+    },
+    defaultPath: {
+      d: 'M32 0c17.673 0 32 14.327 32 32 0 17.673-14.327 32-32 32C14.327 64 0 49.673 0 32 0 14.327 14.327 0 32 0Zm0 18.963c-7.2 0-13.037 5.837-13.037 13.037 0 7.2 5.837 13.037 13.037 13.037 7.2 0 13.037-5.837 13.037-13.037 0-7.2-5.837-13.037-13.037-13.037Z',
+      fill: '#F2B137',
+    },
+    outline: {
+      class: 'game__game-icon game__game-icon-o-outline',
+      width: '66',
+      height: '66',
+      xmlns: 'http://www.w3.org/2000/svg',
+    },
+    outlinePath: {
+      d: 'M33 1c17.673 0 32 14.327 32 32 0 17.673-14.327 32-32 32C15.327 65 1 50.673 1 33 1 15.327 15.327 1 33 1Zm0 18.963c-7.2 0-13.037 5.837-13.037 13.037 0 7.2 5.837 13.037 13.037 13.037 7.2 0 13.037-5.837 13.037-13.037 0-7.2-5.837-13.037-13.037-13.037Z',
+      stroke: '#F2B137',
+      'stroke-width': '2',
+      fill: 'none',
+    },
+  },
+};
 
 // GAME
 
 class Game {
-  constructor(player1, player2, againstCPU, cpuMarker) {
-    // May be done better/smarter
+  constructor(player1, player2, cpuMarker) {
     this.playerX = player1;
     this.playerO = player2;
-    this.againstCPU = againstCPU;
     this.cpuMarker = cpuMarker;
     this.scorePlayerOne = 0;
     this.scorePlayerTwo = 0;
     this.scoreTies = 0;
     this.turn = 'x';
-    this.PlayerXMarkers = [];
-    this.PlayerOMarkers = [];
-
-    // Ett sätt istället för att lägga in alla marker id i en lista för båda spelarna kan vara att det redan är en lista med spelplanens ID, som byts till O eller X när man spelar. Kan förenkla flera av funktionerna nedan.
-    this.PlayerXMarkersNew = [
-      ['1', '2', '3'],
-      ['4', '5', '6'],
-      ['7', '8', '9'],
-      ['1', '4', '7'],
-      ['2', '5', '8'],
-      ['3', '6', '9'],
-      ['1', '5', '9'],
-      ['3', '5', '7'],
-    ];
-    this.PlayerOMarkersNew = [
+    this.startingPlayer = 'x';
+    this.gameBoard = [
       ['1', '2', '3'],
       ['4', '5', '6'],
       ['7', '8', '9'],
@@ -41,41 +75,148 @@ class Game {
       ['3', '5', '7'],
     ];
 
-    this.changeToGameView();
-    this._displayStats(true);
-    if (this.againstCPU && this.turn === this.cpuMarker) {
-      this.addMarkerForCPU();
-      this.checkGame();
-      this.changeTurn();
+    this._displayStats();
+
+    // This needs to run if CPU is X.
+    if (this.turn === this.cpuMarker) {
+      this._addMarkerForCPU();
     }
   }
 
-  // Public functions
-  changeToGameView() {
-    document.querySelector('.start').style.display = 'none';
-    document.querySelector('.game').style.display = 'block';
+  createSvgIcon(svgAttributes, pathAttributes) {
+    const svgElement = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'svg'
+    );
+    for (let key in svgAttributes) {
+      svgElement.setAttribute(key, svgAttributes[key]);
+    }
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    for (let key in pathAttributes) {
+      path.setAttribute(key, pathAttributes[key]);
+    }
+    svgElement.appendChild(path);
+
+    return svgElement;
   }
 
-  changeToStartView() {
-    document.querySelector('.start').style.display = 'block';
-    document.querySelector('.game').style.display = 'none';
+  addMarkerToDOM(markerId) {
+    const box = document.querySelector(`#box-${markerId}`);
+    box.classList.add('active');
+    console.log('marker added to ' + markerId);
+    if (this.turn === 'x') {
+      box.appendChild(
+        this.createSvgIcon(svgAttributes.x.default, svgAttributes.x.defaultPath)
+      );
+    } else {
+      box.appendChild(
+        this.createSvgIcon(svgAttributes.o.default, svgAttributes.o.defaultPath)
+      );
+    }
+    this._addMarkerToGameBoard(markerId);
+    this._checkGame();
+    this._changeTurn();
+
+    // Add marker for DOM
+    if (this.turn === this.cpuMarker) {
+      this._addMarkerForCPU();
+    }
   }
 
-  showResultPopup(result) {
-    // Change popup on who is the winner
+  resetGame() {
+    // Reset marker lists
+    this.gameBoard = [
+      ['1', '2', '3'],
+      ['4', '5', '6'],
+      ['7', '8', '9'],
+      ['1', '4', '7'],
+      ['2', '5', '8'],
+      ['3', '6', '9'],
+      ['1', '5', '9'],
+      ['3', '5', '7'],
+    ];
+    const allActiveGameBoxes = document.querySelectorAll(
+      '.game__board .active'
+    );
+    allActiveGameBoxes.forEach((item) => {
+      item.classList.remove('active');
+      item.firstElementChild.remove();
+    });
+
+    this._displayStats();
+    if (this.turn === this.cpuMarker) {
+      this._addMarkerForCPU();
+    }
+  }
+
+  _changeTurn() {
+    if (this.turn === 'x') {
+      this.turn = 'o';
+      document.querySelector('.game__turn-icon-x').classList.remove('active');
+      document.querySelector('.game__turn-icon-o').classList.add('active');
+    } else {
+      this.turn = 'x';
+      document.querySelector('.game__turn-icon-o').classList.remove('active');
+      document.querySelector('.game__turn-icon-x').classList.add('active');
+    }
+  }
+
+  _checkGame() {
+    // Only need to check current turn
+    let win = false;
+    this.gameBoard.forEach((list) => {
+      if (
+        list.every((item) => {
+          return item === this.turn;
+        })
+      ) {
+        win = true;
+      }
+    });
+    if (win) {
+      this._showResultPopup(this.turn);
+      this.turn === 'x' ? this.scorePlayerOne++ : this.scorePlayerTwo++;
+      return true;
+    } else {
+      const allActiveGameBoxes = document.querySelectorAll(
+        '.game__board-box.active'
+      );
+      if (allActiveGameBoxes.length === 9) {
+        this._showResultPopup('tie');
+        this.scoreTies++;
+        return 'tie';
+      }
+    }
+    return false;
+  }
+
+  _displayStats() {
+    document.querySelector(
+      '.game__score-box-x .game__score-box-text'
+    ).innerText = `X (${this.playerX})`;
+    document.querySelector(
+      '.game__score-box-o .game__score-box-text'
+    ).innerText = `O (${this.playerO})`;
+    document.querySelector('.game__score-x').innerText = this.scorePlayerOne;
+    document.querySelector('.game__score-ties').innerText = this.scoreTies;
+    document.querySelector('.game__score-o').innerText = this.scorePlayerTwo;
+  }
+
+  _showResultPopup(result) {
     if (result === 'x') {
-      document.querySelector(
-        '.popup__text--s'
-      ).innerText = `${this.playerX} wins`;
+      document.querySelector('.popup__text--s').innerText = `${this.playerX} ${
+        this.playerX.toLowerCase() === 'you' ? 'win' : 'wins'
+      }`;
       document.querySelector('.popup__icon-x').style.display = 'block';
       document.querySelector('.popup__icon-o').style.display = 'none';
       document.querySelector('.popup__text--l').innerText = 'Takes the round';
       document.querySelector('.popup__text--l').style.color =
         'var(--clr-accent-x)';
     } else if (result === 'o') {
-      document.querySelector(
-        '.popup__text--s'
-      ).innerText = `${this.playerO} wins`;
+      document.querySelector('.popup__text--s').innerText = `${this.playerO} ${
+        this.playerO.toLowerCase() === 'you' ? 'win' : 'wins'
+      }`;
       document.querySelector('.popup__icon-x').style.display = 'none';
       document.querySelector('.popup__icon-o').style.display = 'block';
       document.querySelector('.popup__text--l').innerText = 'Takes the round';
@@ -92,116 +233,108 @@ class Game {
     document.querySelector('.popup--results').style.display = 'flex';
   }
 
-  // Only random - too easy to win over CPU
-  addRandomMarkerForCPU() {
-    // Check available spots
-    const boxes = document.querySelectorAll('.game__board-box');
-    const avaSpots = [];
-    boxes.forEach((box) => {
-      if (!box.classList.contains('active')) {
-        avaSpots.push(box.id);
+  _addMarkerToGameBoard(markerId) {
+    this.gameBoard.forEach((item, index) => {
+      for (let num of item) {
+        if (num === markerId) {
+          this.gameBoard[index][item.indexOf(num)] = this.turn;
+        }
       }
     });
-    const randIndex = Math.floor(Math.random() * avaSpots.length);
-    const randBox = document.querySelector(`#${avaSpots[randIndex]}`);
-    const boxChildrenArr = Array.from(randBox.children);
-    randBox.classList.add('active');
-    if (this.turn === 'x') {
-      this.PlayerXMarkers.push(randBox.id.slice(-1));
-      boxChildrenArr.forEach((item) => {
-        if (item.classList.contains('game__game-icon-x')) {
-          item.classList.add('active');
-        }
-      });
-    } else {
-      this.PlayerOMarkers.push(randBox.id.slice(-1));
-      boxChildrenArr.forEach((item) => {
-        if (item.classList.contains('game__game-icon-o')) {
-          item.classList.add('active');
-        }
-      });
-    }
   }
 
-  addMarkerForCPU() {
-    // Check available spots
-    const boxes = document.querySelectorAll('.game__board-box');
-    const avaSpots = [];
-    boxes.forEach((box) => {
-      if (!box.classList.contains('active')) {
-        avaSpots.push(box.id.slice(-1));
-      }
-    });
-
-    const markersCPU =
-      this.cpuMarker === 'x' ? this.PlayerXMarkersNew : this.PlayerOMarkersNew;
-    const markersPlayer =
-      this.cpuMarker === 'x' ? this.PlayerOMarkersNew : this.PlayerXMarkersNew;
-
-    if (this.checkForWinningMoves(markersCPU)) {
+  _addMarkerForCPU() {
+    const opponentMarker = this.turn === 'x' ? 'o' : 'x';
+    if (this._checkForWinningOrBlockingMoves(this.turn)) {
       console.log('winning move exists');
-      this.addMarkerToDOM(this.checkForWinningMoves(markersCPU));
-    } else if (this.checkForBlockingMoves(markersPlayer)) {
+      this.addMarkerToDOM(this._checkForWinningOrBlockingMoves(this.turn));
+    } else if (this._checkForWinningOrBlockingMoves(opponentMarker)) {
       console.log('no winning move, blocking move exists');
-      this.addMarkerToDOM(this.checkForBlockingMoves(markersPlayer));
-    } else if (this.checkForForkingMoves(markersCPU, this.turn)) {
+      this.addMarkerToDOM(this._checkForWinningOrBlockingMoves(opponentMarker));
+    } else if (this._checkForForkingMoves(this.turn)) {
       console.log(
         'no winning move, no blocking move, forking move exists for cpu'
       );
-      this.addMarkerToDOM(this.checkForForkingMoves(markersCPU, this.turn));
-    } else if (
-      this.checkForForkingMoves(markersPlayer, this.turn === 'x' ? 'o' : 'x')
-    ) {
+      this.addMarkerToDOM(this._checkForForkingMoves(this.turn));
+    } else if (this._checkForForkingMoves(opponentMarker)) {
       console.log(
         'no winning move, no blocking move, forking move exists for opponent'
       );
-      this.addMarkerToDOM(
-        this.checkForForkingMoves(markersPlayer, this.turn === 'x' ? 'o' : 'x')
-      );
-    } else if (this.checkForCenterCornerOrSide()) {
+      this.addMarkerToDOM(this._checkForForkingMoves(opponentMarker));
+    } else if (this._checkForCenterCornerOrSide()) {
       console.log('center, corner or side exists');
-      this.addMarkerToDOM(this.checkForCenterCornerOrSide());
+      this.addMarkerToDOM(this._checkForCenterCornerOrSide());
     } else {
       console.log('no, option. tied game if no active spots');
-
-      // This adds random marker if no option above - delete later
-      const randIndex = Math.floor(Math.random() * avaSpots.length);
-      const randBox = document.querySelector(`#box-${avaSpots[randIndex]}`);
-      const boxChildrenArr = Array.from(randBox.children);
-      randBox.classList.add('active');
-      if (this.turn === 'x') {
-        this.PlayerXMarkers.push(randBox.id.slice(-1));
-        this.PlayerXMarkersNew.forEach((item, index) => {
-          for (let num of item) {
-            if (num === randBox.id.slice(-1)) {
-              this.PlayerXMarkersNew[index][item.indexOf(num)] = 'x';
-            }
-          }
-        });
-        boxChildrenArr.forEach((item) => {
-          if (item.classList.contains('game__game-icon-x')) {
-            item.classList.add('active');
-          }
-        });
-      } else {
-        this.PlayerOMarkers.push(randBox.id.slice(-1));
-        this.PlayerOMarkersNew.forEach((item, index) => {
-          for (let num of item) {
-            if (num === randBox.id.slice(-1)) {
-              this.PlayerOMarkersNew[index][item.indexOf(num)] = 'o';
-            }
-          }
-        });
-        boxChildrenArr.forEach((item) => {
-          if (item.classList.contains('game__game-icon-o')) {
-            item.classList.add('active');
-          }
-        });
-      }
     }
   }
 
-  checkForCenterCornerOrSide() {
+  _checkForWinningOrBlockingMoves(markerToCheck) {
+    let counter;
+    let boxId;
+    let winningId;
+    this.gameBoard.forEach((list, index) => {
+      counter = 0;
+      for (let item of list) {
+        if (item === markerToCheck) {
+          counter++;
+        } else {
+          boxId =
+            item !== 'x' && item !== 'o'
+              ? this.gameBoard[index][list.indexOf(item)]
+              : null;
+        }
+      }
+      if (counter === 2 && boxId) {
+        winningId = boxId;
+      }
+    });
+    return winningId ? winningId : false;
+  }
+
+  _checkForForkingMoves(markerToCheck) {
+    // Works the same for both the player and opponent. Takes in different marker to check.
+    // Check for possibility to create 2 x 2 in a row
+    // 1. Select all rows with one in a row and two free spots
+    // 2. Check if these rows have a common id --> this is the forking move.
+    let counter = 0;
+    const rowsToCheck = [];
+    let freeSpotsInRow = [];
+    this.gameBoard.forEach((list) => {
+      counter = 0;
+      freeSpotsInRow = [];
+      for (let item of list) {
+        if (item === markerToCheck) {
+          counter++;
+        } else {
+          if (item !== 'x' && item !== 'o') {
+            freeSpotsInRow.push(item);
+          }
+        }
+      }
+      if (freeSpotsInRow.length === 2 && counter === 1) {
+        rowsToCheck.push(freeSpotsInRow);
+      }
+    });
+    const commonItems = [];
+    if (rowsToCheck.length >= 2) {
+      for (let i = 0; i < rowsToCheck.length - 1; i++) {
+        for (let j = i + 1; j < rowsToCheck.length; j++) {
+          let commonElements = this._findCommonElements(
+            rowsToCheck[i],
+            rowsToCheck[j]
+          );
+          if (commonElements.length > 0) {
+            // If there are common elements, add them to commonItems
+            commonItems.push(...commonElements);
+          }
+        }
+      }
+    }
+    return commonItems.length > 0 ? commonItems[0] : false;
+  }
+
+  _checkForCenterCornerOrSide() {
     const allBoardBoxes = document.querySelectorAll('.game__board-box');
     const availableBoxId = [];
     allBoardBoxes.forEach((box) => {
@@ -237,284 +370,12 @@ class Game {
     }
   }
 
-  checkForForkingMoves(markers, markerToCheck) {
-    // Works the same for both the player and opponent. Takes in different markers
-    // Check for possibility to create 2 x 2 in a row
-    // 1. Select all rows with one in a row and two free spots
-    // 2. Check if these rows have a common id --> this is the forking move.
-    let counter = 0;
-    const rowsToCheck = [];
-    let freeSpotsInRow = [];
-    markers.forEach((list) => {
-      counter = 0;
-      freeSpotsInRow = [];
-      for (let item of list) {
-        if (item === markerToCheck) {
-          counter++;
-        } else {
-          if (
-            !document.querySelector(`#box-${item}`).classList.contains('active')
-          ) {
-            freeSpotsInRow.push(item);
-          }
-        }
-      }
-      if (freeSpotsInRow.length === 2 && counter === 1) {
-        rowsToCheck.push(freeSpotsInRow);
-      }
-    });
-    const commonItems = [];
-    if (rowsToCheck.length >= 2) {
-      for (let i = 0; i < rowsToCheck.length - 1; i++) {
-        for (let j = i + 1; j < rowsToCheck.length; j++) {
-          let commonElements = this.findCommonElements(
-            rowsToCheck[i],
-            rowsToCheck[j]
-          );
-          if (commonElements.length > 0) {
-            // If there are common elements, add them to commonItems
-            commonItems.push(...commonElements);
-          }
-        }
-      }
-    }
-    return commonItems.length > 0 ? commonItems[0] : false;
-  }
-
-  findCommonElements(arr1, arr2) {
+  _findCommonElements(arr1, arr2) {
     return arr1.filter((element) => arr2.includes(element));
-  }
-
-  checkForBlockingMoves(markersPlayer) {
-    // Almost same as winning moves. Check for two in a row for opponent
-    let counter = 0;
-    let boxId;
-    let blockingId;
-    const markerToCheck = this.turn === 'x' ? 'o' : 'x';
-    markersPlayer.forEach((list, index) => {
-      counter = 0;
-      for (let item of list) {
-        if (item === markerToCheck) {
-          counter++;
-        } else {
-          boxId = markersPlayer[index][list.indexOf(item)];
-        }
-      }
-      if (
-        counter >= 2 &&
-        boxId &&
-        !document.querySelector(`#box-${boxId}`).classList.contains('active')
-      ) {
-        blockingId = boxId;
-      }
-    });
-    return blockingId ? blockingId : false;
-  }
-
-  checkForWinningMoves(markersCPU) {
-    // Should be made as a separate function that return either ID or false, if false continue to check blocking moves that does the same thing
-    // This seem to work; next a function that check for blocking moves if this returns false
-    let counter = 0;
-    let boxId;
-    let winningId;
-    markersCPU.forEach((list, index) => {
-      counter = 0;
-      for (let item of list) {
-        if (item === this.turn) {
-          counter++;
-        } else {
-          boxId = markersCPU[index][list.indexOf(item)];
-        }
-      }
-      if (
-        counter >= 2 &&
-        boxId &&
-        !document.querySelector(`#box-${boxId}`).classList.contains('active')
-      ) {
-        winningId = boxId;
-      }
-    });
-    return winningId ? winningId : false;
-  }
-
-  addMarkerToDOM(markerId) {
-    const box = document.querySelector(`#box-${markerId}`);
-    box.classList.add('active');
-    const boxChildrenArr = Array.from(box.children);
-    if (this.turn === 'x') {
-      this.PlayerXMarkers.push(markerId);
-      this.PlayerXMarkersNew.forEach((item, index) => {
-        for (let num of item) {
-          if (num === markerId) {
-            this.PlayerXMarkersNew[index][item.indexOf(num)] = 'x';
-          }
-        }
-      });
-      boxChildrenArr.forEach((item) => {
-        if (item.classList.contains('game__game-icon-x')) {
-          item.classList.add('active');
-        }
-      });
-    } else {
-      this.PlayerOMarkers.push(markerId);
-      this.PlayerOMarkersNew.forEach((item, index) => {
-        for (let num of item) {
-          if (num === markerId) {
-            this.PlayerOMarkersNew[index][item.indexOf(num)] = 'o';
-          }
-        }
-      });
-      boxChildrenArr.forEach((item) => {
-        if (item.classList.contains('game__game-icon-o')) {
-          item.classList.add('active');
-        }
-      });
-    }
-  }
-
-  changeTurn() {
-    if (this.turn === 'x') {
-      this.turn = 'o';
-      document.querySelector('.game__turn-icon-x').classList.remove('active');
-      document.querySelector('.game__turn-icon-o').classList.add('active');
-    } else {
-      this.turn = 'x';
-      document.querySelector('.game__turn-icon-o').classList.remove('active');
-      document.querySelector('.game__turn-icon-x').classList.add('active');
-    }
-    if (this.againstCPU) {
-    }
-  }
-
-  includesAll(markers, combo) {
-    return combo.every((value) => markers.includes(value));
-  }
-
-  checkGame() {
-    // Only check current turn
-    const markers =
-      this.turn === 'x' ? this.PlayerXMarkersNew : this.PlayerOMarkersNew;
-
-    let win = false;
-    markers.forEach((list) => {
-      if (
-        list.every((item) => {
-          return item === this.turn;
-        })
-      ) {
-        win = true;
-      }
-    });
-    if (win) {
-      this.showResultPopup(`${this.turn}`);
-      if (this.turn === 'x') {
-        this.scorePlayerOne++;
-      } else {
-        this.scorePlayerTwo++;
-      }
-    } else {
-      const allActiveGameBoxes = document.querySelectorAll(
-        '.game__board-box.active'
-      );
-      console.log(allActiveGameBoxes);
-      if (allActiveGameBoxes.length === 9) {
-        this.showResultPopup();
-        this.scoreTies++;
-        return 'tie';
-      }
-    }
-
-    // GAMMAL
-    // Kombinationer:
-    // const winCombinations = [
-    //   ['1', '2', '3'],
-    //   ['4', '5', '6'],
-    //   ['7', '8', '9'],
-    //   ['1', '4', '7'],
-    //   ['2', '5', '8'],
-    //   ['3', '6', '9'],
-    //   ['1', '5', '9'],
-    //   ['3', '5', '7'],
-    // ];
-
-    // const markers =
-    //   this.turn === 'x' ? this.PlayerXMarkers : this.PlayerOMarkers;
-    // let win = false;
-    // winCombinations.forEach((combo) => {
-    //   if (this.includesAll(markers, combo)) {
-    //     win = true;
-    //   }
-    // });
-    // if (win) {
-    //   this.showResultPopup(`${this.turn}`);
-    //   if (this.turn === 'x') {
-    //     this.scorePlayerOne++;
-    //   } else {
-    //     this.scorePlayerTwo++;
-    //   }
-    // } else if (win === false && markers.length === 5) {
-    //   this.showResultPopup();
-    //   this.scoreTies++;
-    // }
-  }
-
-  resetGame() {
-    // Reset marker lists
-    this.PlayerXMarkers = [];
-    this.PlayerOMarkers = [];
-    this.PlayerXMarkersNew = [
-      ['1', '2', '3'],
-      ['4', '5', '6'],
-      ['7', '8', '9'],
-      ['1', '4', '7'],
-      ['2', '5', '8'],
-      ['3', '6', '9'],
-      ['1', '5', '9'],
-      ['3', '5', '7'],
-    ];
-    this.PlayerOMarkersNew = [
-      ['1', '2', '3'],
-      ['4', '5', '6'],
-      ['7', '8', '9'],
-      ['1', '4', '7'],
-      ['2', '5', '8'],
-      ['3', '6', '9'],
-      ['1', '5', '9'],
-      ['3', '5', '7'],
-    ];
-
-    // Reset markers
-    // const allGameBoxes = document.querySelectorAll('.game__board-box');
-    // allGameBoxes.forEach((box) => {
-    //   box.classList.remove('active');
-    // });
-    const allActiveGameBoxes = document.querySelectorAll(
-      '.game__board .active'
-    );
-    allActiveGameBoxes.forEach((item) => {
-      item.classList.remove('active');
-    });
-    this._displayStats();
-  }
-
-  // Private functions
-  _displayStats(newGame = false) {
-    // Change text on score boxes in new games
-    if (newGame) {
-      document.querySelector(
-        '.game__score-box-x .game__score-box-text'
-      ).innerText = `X (${this.playerX})`;
-      document.querySelector(
-        '.game__score-box-o .game__score-box-text'
-      ).innerText = `O (${this.playerO})`;
-    }
-    document.querySelector('.game__score-x').innerText = this.scorePlayerOne;
-    document.querySelector('.game__score-ties').innerText = this.scoreTies;
-    document.querySelector('.game__score-o').innerText = this.scorePlayerTwo;
   }
 }
 
-// START VIEW
+// APP
 
 class App {
   constructor() {
@@ -536,32 +397,30 @@ class App {
     document
       .querySelector('.btn-primary-player')
       .addEventListener('click', this._newGame.bind(this));
-
     document
       .querySelector('.game__board')
-      .addEventListener('click', this._addMarker.bind(this));
-
+      .addEventListener('click', this._addMarkerForPlayer.bind(this));
     document
       .querySelector('.game__board')
       .addEventListener('mouseover', this._handleHover.bind(this));
     document
       .querySelector('.game__board')
-      .addEventListener('mouseleave', this._handleHover.bind(this));
+      .addEventListener('mouseout', this._handleHover.bind(this));
     document
       .querySelector('.btn-secondary-light--reset')
-      .addEventListener('click', this.toggleRestartPopup.bind(this));
+      .addEventListener('click', this._toggleRestartPopup.bind(this));
     document
       .querySelector('.popup__btn-cancel')
-      .addEventListener('click', this.toggleRestartPopup.bind(this));
+      .addEventListener('click', this._toggleRestartPopup.bind(this));
     document
       .querySelector('.popup__btn-restart')
-      .addEventListener('click', this.restartGame.bind(this));
+      .addEventListener('click', this._restartGame.bind(this));
     document
       .querySelector('.popup__btn-quit')
-      .addEventListener('click', this.restartGame.bind(this));
+      .addEventListener('click', this._restartGame.bind(this));
     document
       .querySelector('.popup__btn-next-round')
-      .addEventListener('click', this.nextRound.bind(this));
+      .addEventListener('click', this._nextRound.bind(this));
   }
 
   _changeSelectedMarker(e) {
@@ -593,117 +452,85 @@ class App {
       this.playerTwoMarker = 'x';
     }
   }
+
   _newGame(e) {
     if (e.target.classList.contains('btn-primary-cpu')) {
-      if (document.querySelector('.start__box.start__box-x.selected')) {
-        this._game = new Game('You', 'CPU', true, 'o');
+      if (this.playerOneMarker === 'x') {
+        this._game = new Game('You', 'CPU', 'o');
       } else {
-        this._game = new Game('CPU', 'You', true, 'x');
+        this._game = new Game('CPU', 'You', 'x');
       }
     } else {
-      // Game player vs player, no point in choosing.
-      this._game = new Game('Player 1', 'Player 2', false);
+      this._game = new Game('Player 1', 'Player 2', '');
     }
+    this._changeToGameView();
   }
 
-  // Should move most of this to addMarkerToDOM-function
-  _addMarker(e) {
-    if (
-      e.target.classList.contains('game__board-box') ||
-      e.target.classList.contains('game__game-icon')
-    ) {
+  _changeToGameView() {
+    document.querySelector('.start').style.display = 'none';
+    document.querySelector('.game').style.display = 'block';
+  }
+
+  _addMarkerForPlayer(e) {
+    if (e.target.classList.contains('game__board-box')) {
       const pressedBox = e.target.closest('.game__board-box');
       if (pressedBox.classList.contains('active')) {
         return;
       }
-      const boxChildrenArr = Array.from(pressedBox.children);
-
-      boxChildrenArr.forEach((child) => {
-        child.classList.remove('hover');
-        if (child.classList.contains(`game__game-icon-${this._game.turn}`)) {
-          child.classList.add('active');
-          pressedBox.classList.add('active');
-          if (this._game.turn === 'x') {
-            this._game.PlayerXMarkers.push(pressedBox.id.slice(-1));
-            this._game.PlayerXMarkersNew.forEach((item, index) => {
-              for (let num of item) {
-                if (num === pressedBox.id.slice(-1)) {
-                  this._game.PlayerXMarkersNew[index][item.indexOf(num)] = 'x';
-                }
-              }
-            });
-          } else {
-            this._game.PlayerOMarkers.push(pressedBox.id.slice(-1));
-            this._game.PlayerOMarkersNew.forEach((item, index) => {
-              for (let num of item) {
-                if (num === pressedBox.id.slice(-1)) {
-                  this._game.PlayerOMarkersNew[index][item.indexOf(num)] = 'o';
-                }
-              }
-            });
-          }
-        }
-      });
+      // Remove any hover icon
+      if (pressedBox.firstElementChild) {
+        pressedBox.firstElementChild.remove();
+      }
+      this._game.addMarkerToDOM(pressedBox.id.slice(-1));
     } else {
       return;
-    }
-    this._game.checkGame();
-    this._game.changeTurn();
-    if (
-      this._game.againstCPU &&
-      this._game.turn === this._game.cpuMarker &&
-      this._game.checkGame() !== 'tie'
-    ) {
-      this._game.addMarkerForCPU(this._game.cpuMarker); // This cannot be run if tied game.
-      this._game.checkGame();
-      this._game.changeTurn();
     }
   }
 
   _handleHover(e) {
-    const allIcons = document.querySelectorAll(`.game__game-icon`);
-    allIcons.forEach((icon) => {
-      icon.classList.remove('hover');
-    });
-
     const box = e.target.closest('.game__board-box');
+
     if (!box || box.classList.contains('active')) {
       return;
     }
 
-    const boxChildren = box.children;
-    const boxChildrenArr = Array.from(boxChildren);
-    boxChildrenArr.forEach((child) => {
-      if (
-        child.classList.contains(`game__game-icon-${this._game.turn}-outline`)
-      ) {
-        child.classList.add('hover');
+    if (e.type === 'mouseover' && !box.firstElementChild) {
+      if (this._game.turn === 'x') {
+        box.appendChild(
+          this._game.createSvgIcon(
+            svgAttributes.x.outline,
+            svgAttributes.x.outlinePath
+          )
+        );
+      } else {
+        box.appendChild(
+          this._game.createSvgIcon(
+            svgAttributes.o.outline,
+            svgAttributes.o.outlinePath
+          )
+        );
       }
-    });
+    } else if (e.type === 'mouseout') {
+      box.firstElementChild.remove();
+    }
   }
 
-  restartGame() {
-    // Simple solution - may be better ones? Kan försöka göra en bättre lösning senare, där allt nollställs utan att jag reloadar sidan.
-    window.location.reload();
-
-    // this._game.changeToStartView();
-    // delete this._game;
-    // this.toggleRestartPopup();
-    // console.log(this._game);
-  }
-
-  nextRound() {
-    document.querySelector('.popup--results').style.display = 'none';
-    this._game.resetGame();
-  }
-
-  toggleRestartPopup() {
+  _toggleRestartPopup() {
     if (document.querySelector('.popup--restart').style.display !== 'flex') {
       document.querySelector('.popup--restart').style.display = 'flex';
     } else {
       document.querySelector('.popup--restart').style.display = 'none';
     }
   }
+
+  _restartGame() {
+    window.location.reload();
+  }
+
+  _nextRound() {
+    document.querySelector('.popup--results').style.display = 'none';
+    this._game.resetGame();
+  }
 }
 
-const app = new App();
+const game = new App();

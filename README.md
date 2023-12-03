@@ -25,8 +25,8 @@ This is a solution to the [Tic Tac Toe challenge on Frontend Mentor](https://www
 
 ### Project status
 
-- This is version 0 of the project.
-- Working on version 1.
+- This is version 1 of the project.
+- More simplification may be done. Maybe in the future.
 
 ### Contact
 
